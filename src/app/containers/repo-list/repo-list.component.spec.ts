@@ -41,10 +41,10 @@ describe('RepoListComponent', () => {
     expect(dispatchSpy).toHaveBeenCalledWith(loadRepos({}));
   });
 
-  it('should dispatch loadRepos with query when onSearch is called', () => {
+  it('should no longer dispatch loadRepos with query when onSearch is called', () => {
     const dispatchSpy = spyOn(store, 'dispatch');
     component.onSearch('angular');
-    expect(dispatchSpy).toHaveBeenCalledWith(loadRepos({ query: 'angular' }));
+    expect(dispatchSpy).not.toHaveBeenCalledWith(loadRepos({ query: 'angular' }));
   });
 
   it('should dispatch loadRepos when onRetry is called', () => {

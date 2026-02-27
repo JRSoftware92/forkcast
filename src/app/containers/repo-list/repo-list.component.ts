@@ -2,6 +2,8 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { RouterModule } from '@angular/router';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { selectRepos, selectLoading, selectError } from '../../store/repos.selectors';
 import { selectIsDarkTheme } from '../../store/theme.selectors';
 import { loadRepos } from '../../store/repos.actions';
@@ -34,7 +36,15 @@ export class RepoListComponent implements OnInit {
 
   searchTerm = signal('');
 
-  filteredRepos = computed(() => this.filterRepos(this.repos(), this.searchTerm()));
+  private debouncedSearchTerm = toSignal(
+    toObservable(this.searchTerm).pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ),
+    { initialValue: this.searchTerm() }
+  );
+
+  filteredRepos = computed(() => this.filterRepos(this.repos(), this.debouncedSearchTerm()));
 
   skeletonCount = Array.from({ length: 12 }, (_, i) => i);
 
@@ -44,7 +54,6 @@ export class RepoListComponent implements OnInit {
 
   onSearch(query: string): void {
     this.searchTerm.set(query);
-    this.store.dispatch(loadRepos({ query: query || undefined }));
   }
 
   onThemeToggle(): void {
