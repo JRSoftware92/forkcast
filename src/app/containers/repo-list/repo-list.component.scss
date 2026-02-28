@@ -18,19 +18,7 @@
 .repo-list__grid {
   display: grid;
   gap: $space-6;
-  grid-template-columns: 1fr;
-
-  @include respond-to('sm') {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @include respond-to('lg') {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  @include respond-to('xl') {
-    grid-template-columns: repeat(4, 1fr);
-  }
+  grid-template-columns: repeat(auto-fit, minmax($card-min-width, 1fr));
 }
 
 .error-state,

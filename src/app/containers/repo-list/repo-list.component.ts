@@ -1,7 +1,10 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { RouterModule } from '@angular/router';
+import { Subject } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { selectRepos, selectLoading, selectError } from '../../store/repos.selectors';
 import { selectIsDarkTheme } from '../../store/theme.selectors';
 import { loadRepos } from '../../store/repos.actions';
@@ -24,7 +27,7 @@ import { GitHubRepo } from '../../models/repo.model';
   templateUrl: './repo-list.component.html',
   styleUrl: './repo-list.component.scss',
 })
-export class RepoListComponent implements OnInit {
+export class RepoListComponent implements OnInit, OnDestroy {
   private store = inject(Store);
 
   repos = this.store.selectSignal(selectRepos);
@@ -34,7 +37,17 @@ export class RepoListComponent implements OnInit {
 
   searchTerm = signal('');
 
-  filteredRepos = computed(() => this.filterRepos(this.repos(), this.searchTerm()));
+  // Used as an intermediary for debouncing search input
+  private searchSubject = new Subject<string>();
+  private debouncedSearchTerm = toSignal(
+      this.searchSubject.pipe(
+          debounceTime(300),
+          distinctUntilChanged()
+      ),
+      { initialValue: '' }
+  );
+
+  filteredRepos = computed(() => this.filterRepos(this.repos(), this.debouncedSearchTerm()));
 
   skeletonCount = Array.from({ length: 12 }, (_, i) => i);
 
@@ -42,9 +55,15 @@ export class RepoListComponent implements OnInit {
     this.store.dispatch(loadRepos({}));
   }
 
+  ngOnDestroy(): void {
+      if (this.searchSubject) {
+          this.searchSubject.complete();
+      }
+  }
+
   onSearch(query: string): void {
     this.searchTerm.set(query);
-    this.store.dispatch(loadRepos({ query: query || undefined }));
+    this.searchSubject.next(query);
   }
 
   onThemeToggle(): void {

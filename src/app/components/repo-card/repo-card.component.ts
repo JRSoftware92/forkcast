@@ -1,8 +1,8 @@
-import { Component, input, computed, OnInit } from '@angular/core';
+import { Component, input, computed, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Observable, Subscription } from 'rxjs';
 import { GitHubRepo } from '../../models/repo.model';
 import { FormatStatPipe } from '../../pipes/format-stat.pipe';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-repo-card',
@@ -11,7 +11,9 @@ import { Observable } from 'rxjs';
   templateUrl: './repo-card.component.html',
   styleUrl: './repo-card.component.scss',
 })
-export class RepoCardComponent implements OnInit {
+export class RepoCardComponent implements OnInit, OnDestroy {
+  private subscription: Subscription | null = null;
+
   repo = input.required<GitHubRepo>();
 
   descriptionDisplay = computed(() => this.repo()?.description ?? 'No description provided.');
@@ -22,6 +24,12 @@ export class RepoCardComponent implements OnInit {
       sub.next(this.repo()?.stargazers_count ?? 0);
       sub.complete();
     });
-    obs$.subscribe(() => {});
+    this.subscription = obs$.subscribe(() => {});
+  }
+
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 }

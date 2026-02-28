@@ -6,7 +6,7 @@
   flex-direction: column;
   gap: $space-3;
   padding: $space-5;
-  min-width: 380px;
+  min-width: $card-min-width;
   background-color: $color-bg-secondary;
   border: 1px solid $color-border;
   border-radius: $radius-lg;

@@ -2,11 +2,9 @@
 @use 'styles/mixins' as *;
 
 // Global theme class applied to body/html
-.theme-dark {
-  body {
-    background-color: $color-bg-primary-dark;
-    color: $color-text-primary-dark;
-  }
+body.theme-dark {
+  background-color: $color-bg-primary-dark;
+  color: $color-text-primary-dark;
 
   .nav-bar {
     background-color: $color-bg-secondary-dark;

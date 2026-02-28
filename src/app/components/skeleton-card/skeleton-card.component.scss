@@ -66,7 +66,7 @@
   width: 60px;
   height: 24px;
   border-radius: $radius-sm;
-  background: #cbd5e1;
+  background: $color-text-secondary-dark;
   animation: skeleton-pulse 1.5s ease-in-out infinite;
 }
 
@@ -74,6 +74,6 @@
   width: 50px;
   height: 14px;
   margin-left: auto;
-  background-color: #94a3b8;
+  background-color: $color-text-muted;
   border-radius: 4px;
 }

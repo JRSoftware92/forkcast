@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Subscription } from 'rxjs';
 import { RepoCardComponent } from './repo-card.component';
 import { GitHubRepo } from '../../models/repo.model';
 
@@ -80,5 +81,14 @@ describe('RepoCardComponent', () => {
     const el = fixture.nativeElement as HTMLElement;
     const descEl = el.querySelector('.repo-card__description');
     expect(descEl?.textContent?.trim()).toContain('No description provided');
+  });
+
+  it('should clean up the subscription when onDestroy is called', () => {
+    const spy = jasmine.createSpy();
+
+    component['subscription'] = new Subscription(spy);
+    component.ngOnDestroy();
+
+    expect(spy).toHaveBeenCalled();
   });
 });
