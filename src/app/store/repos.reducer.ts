@@ -19,6 +19,7 @@ export const reposReducer = createReducer(
   on(loadRepos, (state) => ({
     ...state,
     loading: true,
+    error: null,
   })),
   on(loadReposSuccess, (state, { repos }) => ({
     ...state,

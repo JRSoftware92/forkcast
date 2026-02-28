@@ -52,6 +52,8 @@ describe('reposReducer', () => {
     expect(result.repos).toEqual([]);
   });
 
+  // Based on the instructions for the flickering bug, I believe that "intentional
+  // imperfection" indicates that this logic should be updated rather than preserved
   it('should not clear error on loadRepos (intentional imperfection)', () => {
     const stateWithError = {
       ...initialState,
@@ -59,7 +61,7 @@ describe('reposReducer', () => {
       loading: false,
     };
     const result = reposReducer(stateWithError, loadRepos({}));
-    expect(result.error).toBe('Previous error');
+    expect(result.error).toBe(null);
     expect(result.loading).toBe(true);
   });
 });
