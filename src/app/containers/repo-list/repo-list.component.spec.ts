@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
+import { Subject } from 'rxjs';
 import { RepoListComponent } from './repo-list.component';
 import { loadRepos } from '../../store/repos.actions';
 
@@ -50,6 +51,16 @@ describe('RepoListComponent', () => {
           const dispatchSpy = spyOn(store, 'dispatch');
           component.onRetry();
           expect(dispatchSpy).toHaveBeenCalledWith(loadRepos({ query: undefined }));
+      });
+
+      it('should clean up the search subject when onDestroy is called', () => {
+          const searchSubject = new Subject<string>();
+          const spy = spyOn(searchSubject, 'complete').and.callThrough();
+
+          component['searchSubject'] = searchSubject;
+          component.ngOnDestroy();
+
+          expect(spy).toHaveBeenCalled();
       });
   })
 

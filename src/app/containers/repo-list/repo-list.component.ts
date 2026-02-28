@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { RouterModule } from '@angular/router';
@@ -27,7 +27,7 @@ import { GitHubRepo } from '../../models/repo.model';
   templateUrl: './repo-list.component.html',
   styleUrl: './repo-list.component.scss',
 })
-export class RepoListComponent implements OnInit {
+export class RepoListComponent implements OnInit, OnDestroy {
   private store = inject(Store);
 
   repos = this.store.selectSignal(selectRepos);
@@ -53,6 +53,12 @@ export class RepoListComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.dispatch(loadRepos({}));
+  }
+
+  ngOnDestroy(): void {
+      if (this.searchSubject) {
+          this.searchSubject.complete();
+      }
   }
 
   onSearch(query: string): void {
