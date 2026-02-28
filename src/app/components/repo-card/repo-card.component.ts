@@ -1,8 +1,8 @@
 import { Component, input, computed, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Observable, Subscription } from 'rxjs';
 import { GitHubRepo } from '../../models/repo.model';
 import { FormatStatPipe } from '../../pipes/format-stat.pipe';
-import {Observable, Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-repo-card',
