@@ -44,6 +44,7 @@ export class RepoListComponent implements OnInit {
 
   onSearch(query: string): void {
     this.searchTerm.set(query);
+    this.store.dispatch(loadRepos({ query: query || undefined }));
   }
 
   onThemeToggle(): void {
