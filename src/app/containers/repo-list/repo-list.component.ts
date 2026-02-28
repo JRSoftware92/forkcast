@@ -2,7 +2,8 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { RouterModule } from '@angular/router';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { Subject } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { selectRepos, selectLoading, selectError } from '../../store/repos.selectors';
 import { selectIsDarkTheme } from '../../store/theme.selectors';
@@ -36,12 +37,14 @@ export class RepoListComponent implements OnInit {
 
   searchTerm = signal('');
 
+  // Used as an intermediary for debouncing search input
+  private searchSubject = new Subject<string>();
   private debouncedSearchTerm = toSignal(
-    toObservable(this.searchTerm).pipe(
-      debounceTime(300),
-      distinctUntilChanged()
-    ),
-    { initialValue: this.searchTerm() }
+      this.searchSubject.pipe(
+          debounceTime(300),
+          distinctUntilChanged()
+      ),
+      { initialValue: '' }
   );
 
   filteredRepos = computed(() => this.filterRepos(this.repos(), this.debouncedSearchTerm()));
@@ -54,6 +57,7 @@ export class RepoListComponent implements OnInit {
 
   onSearch(query: string): void {
     this.searchTerm.set(query);
+    this.searchSubject.next(query);
   }
 
   onThemeToggle(): void {
